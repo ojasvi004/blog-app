@@ -1,27 +1,27 @@
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from "react";
+import axios from "axios";
 
 const RegisterPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
 
   async function register(e) {
     e.preventDefault();
 
     try {
       const response = await axios.post(
-        'http://localhost:3000/register',
+        "http://localhost:3000/register",
         { username, password },
         {
-          headers: { 'Content-Type': 'application/json' },
+          headers: { "Content-Type": "application/json" },
         }
       );
 
       if (response.status === 200) {
-        alert('Registration successful');
+        alert("Registration successful");
       }
     } catch (error) {
-      alert('Registration failed');
+      alert(error.response.data.msg || "Registration failed");
     }
   }
 
