@@ -30,6 +30,7 @@ app.post('/logout', (req, res) => {
   res.cookie('token', '').json('ok')
 })
 
+
 connectDB()
   .then(() => {
     app.on("error", (error) => {

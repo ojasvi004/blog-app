@@ -26,6 +26,8 @@ const LoginPage = () => {
     } catch (error) {
       alert("Invalid credentials");
     }
+    location.reload();
+
   };
 
   return (
