@@ -56,12 +56,12 @@ export async function login(req, res) {
 export async function profile(req, res) {
     const { token } = req.cookies; 
     if (!token) {
-      return res.status(401).json({ msg: 'No token provided' });
+      return res.status(401).json({ msg: 'Token not provided' });
     }
   
     jwt.verify(token, secret, (error, info) => {
       if (error) {
-        return res.status(401).json({ msg: 'Invalid or expired token' });
+        return res.status(401).json({ msg: 'Invalid token' });
       }
       res.json(info);
     });
