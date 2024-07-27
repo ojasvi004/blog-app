@@ -9,6 +9,7 @@ const CreatePost = () => {
   const [content, setContent] = useState("");
   const [files, setFiles] = useState(null);
   const [error, setError] = useState(null);
+  const [redirect, setRedirect] = useState(null);
 
   async function createNewPost(e) {
     e.preventDefault();
@@ -23,13 +24,16 @@ const CreatePost = () => {
     data.set("summary", summary);
     data.set("content", content);
     if (files) {
-      data.set("file", files[0]);
+      data.append("file", files[0]);
     }
 
     setError(null);
 
     try {
-      await axios.post("http://localhost:3000/api/v1/post", data);
+      const response = await axios.post("http://localhost:3000/api/v1/post", data);
+      if (response.status === 201) {
+        setRedirect(true);
+      }
     } catch (error) {
       setError("Failed to create post. Please try again.");
       console.log(error);
@@ -92,6 +96,7 @@ const CreatePost = () => {
         />
         <button type="submit">Post</button>
       </form>
+      {redirect && <p>Post created successfully!</p>}
     </div>
   );
 };
