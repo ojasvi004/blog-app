@@ -10,7 +10,7 @@ const Header = () => {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/profile", { withCredentials: true })
+      .get("http://localhost:3000/api/v1/profile", { withCredentials: true })
       .then((res) => {
         setUserInfo(res.data);
       })
@@ -23,7 +23,7 @@ const Header = () => {
   function logout(e) {
     e.preventDefault(); 
 
-    axios.post('http://localhost:3000/logout', {}, { withCredentials: true })
+    axios.post('http://localhost:3000/api/v1/logout', {}, { withCredentials: true })
       .then(() => {
         setUserInfo(null);
         navigate('/login'); 

@@ -11,7 +11,7 @@ const LoginPage = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:3000/login",
+        "http://localhost:3000/api/v1/login",
         { username, password },
         {
           headers: { "Content-Type": "application/json" },

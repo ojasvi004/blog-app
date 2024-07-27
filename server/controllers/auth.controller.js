@@ -2,6 +2,20 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
+import { Post } from "../models/Post.model.js"; 
+import multer from 'multer';
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, file.fieldname + '-' + Date.now());
+  }
+});
+
+const upload = multer({ storage: storage });
+
 const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
 
 export async function register(req, res) {
@@ -54,17 +68,15 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-    const { token } = req.cookies; 
-    if (!token) {
-      return res.status(401).json({ msg: 'Token not provided' });
-    }
-  
-    jwt.verify(token, secret, (error, info) => {
-      if (error) {
-        return res.status(401).json({ msg: 'Invalid token' });
-      }
-      res.json(info);
-    });
-}
-  
+  const { token } = req.cookies; 
+  if (!token) {
+    return res.status(401).json({ msg: 'Token not provided' });
+  }
 
+  jwt.verify(token, secret, (error, info) => {
+    if (error) {
+      return res.status(401).json({ msg: 'Invalid token' });
+    }
+    res.json(info);
+  });
+}
