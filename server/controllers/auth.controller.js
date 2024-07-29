@@ -2,16 +2,16 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
-import { Post } from "../models/Post.model.js"; 
-import multer from 'multer';
+import { Post } from "../models/Post.model.js";
+import multer from "multer";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/');
+    cb(null, "uploads/");
   },
   filename: function (req, file, cb) {
-    cb(null, file.fieldname + '-' + Date.now());
-  }
+    cb(null, file.fieldname + "-" + Date.now());
+  },
 });
 
 const upload = multer({ storage: storage });
@@ -21,7 +21,7 @@ const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
 export async function register(req, res) {
   const { username, password } = req.body;
   try {
-    const saltRounds = 10;     
+    const saltRounds = 10;
     const salt = bcrypt.genSaltSync(saltRounds);
     const hashedPassword = bcrypt.hashSync(password, salt);
     const checkUsername = await User.findOne({ username });
@@ -68,15 +68,16 @@ export async function login(req, res) {
 }
 
 export async function profile(req, res) {
-  const { token } = req.cookies; 
+  const { token } = req.cookies;
   if (!token) {
-    return res.status(401).json({ msg: 'Token not provided' });
+    return res.status(401).json({ msg: "Token not provided" });
   }
 
   jwt.verify(token, secret, (error, info) => {
     if (error) {
-      return res.status(401).json({ msg: 'Invalid token' });
+      return res.status(401).json({ msg: "Invalid token" });
     }
+
     res.json(info);
   });
 }

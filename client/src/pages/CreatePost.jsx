@@ -19,23 +19,28 @@ const CreatePost = () => {
       return;
     }
 
-    const data = new FormData();
-    data.set("title", title);
-    data.set("summary", summary);
-    data.set("content", content);
+    const formData = new FormData();
+    formData.set("title", title);
+    formData.set("summary", summary);
+    formData.set("content", content);
     if (files) {
-      data.append("file", files[0]);
+      formData.append("file", files[0]);
     }
 
     setError(null);
 
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/post", data);
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/post",
+        formData,
+        { withCredentials: true }
+      );
+
       if (response.status === 201) {
         setRedirect(true);
       }
     } catch (error) {
-      setError("Failed to create post. Please try again.");
+      setError("Failed to create post. Try again");
       console.log(error);
     }
   }

@@ -10,7 +10,7 @@ const RegisterPage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:3000/register",
+        "http://localhost:3000/api/v1/register",
         { username, password },
         {
           headers: { "Content-Type": "application/json" },
