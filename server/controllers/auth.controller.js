@@ -81,3 +81,20 @@ export async function profile(req, res) {
     res.json(info);
   });
 }
+
+export async function post(req, res) {
+  try {
+    const posts = await Post.find({})
+      .populate("author", ["username"])
+      .sort({ createdAt: -1 })
+      .limit(20);
+    res.status(200).json(posts);
+  } catch (error) {
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+}
+
+export async function logout(req, res) {
+  const { token } = req.cookies;
+  res.cookie("token", "").json("ok");
+}

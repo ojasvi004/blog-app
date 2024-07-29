@@ -2,7 +2,13 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
-import { register, login, profile } from "./controllers/auth.controller.js";
+import {
+  register,
+  login,
+  profile,
+  post,
+  logout,
+} from "./controllers/auth.controller.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
 import fs from "fs";
@@ -46,9 +52,8 @@ const upload = multer({ storage });
 app.post("/api/v1/register", register);
 app.post("/api/v1/login", login);
 app.get("/api/v1/profile", profile);
-app.post("/api/v1/logout", (req, res) => {
-  res.cookie("token", "").json("ok");
-});
+app.get("/api/v1/post", post);
+app.post("/api/v1/logout", logout);
 
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   const { originalname, path: tempPath } = req.file;
@@ -92,15 +97,3 @@ connectDB()
     console.error("MongoDB connection failed! ", err);
     process.exit(1);
   });
-
-app.get("/api/v1/post", async (req, res) => {
-  try {
-    const posts = await Post.find({})
-      .populate("author", ["username"])
-      .sort({ createdAt: -1 })
-      .limit(20);
-    res.status(200).json(posts);
-  } catch (error) {
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
