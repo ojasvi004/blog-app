@@ -8,6 +8,8 @@ import {
   profile,
   post,
   logout,
+  findPost,
+  findAuthor,
 } from "./controllers/auth.controller.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
@@ -54,6 +56,8 @@ app.post("/api/v1/login", login);
 app.get("/api/v1/profile", profile);
 app.get("/api/v1/post", post);
 app.post("/api/v1/logout", logout);
+app.get("/api/v1/post/:id", findPost);
+app.get("/api/v1/author/:id", findAuthor);
 
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   const { originalname, path: tempPath } = req.file;
@@ -68,7 +72,7 @@ app.post("/api/v1/post", upload.single("file"), async (req, res) => {
       return res.status(401).json({ msg: "Invalid token" });
     }
 
-    const { id, title, summary, content } = req.body;
+    const { title, summary, content } = req.body;
     const postDoc = await Post.create({
       title,
       summary,
