@@ -2,7 +2,6 @@ import { formatISO9075 } from "date-fns";
 import { Link } from "react-router-dom";
 
 const Post = ({ _id, title, summary, cover, content, createdAt, author }) => {
-  // const image = "http://localhost:3000/api/v1/" + cover;
   return (
     <div className="post">
       <div className="image">

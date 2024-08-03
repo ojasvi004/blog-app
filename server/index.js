@@ -17,8 +17,10 @@ import fs from "fs";
 import path from "path";
 import { Post } from "./models/Post.model.js";
 import jwt from "jsonwebtoken";
-dotenv.config();
+import { createComment } from "./controllers/comment.controller.js";
 import { fileURLToPath } from "url";
+
+dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,7 +28,6 @@ const __dirname = path.dirname(__filename);
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use("/uploads", express.static("./uploads"));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
@@ -58,6 +59,7 @@ app.get("/api/v1/post", post);
 app.post("/api/v1/logout", logout);
 app.get("/api/v1/post/:id", findPost);
 app.get("/api/v1/author/:id", findAuthor);
+app.post("/api/v1/post/:id/createComment", createComment);
 
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   const { originalname, path: tempPath } = req.file;
@@ -80,7 +82,7 @@ app.post("/api/v1/post", upload.single("file"), async (req, res) => {
       cover: newPath,
       author: info.id,
     });
-    res.json(postDoc);
+    res.status(201).json(postDoc);
   });
 });
 
@@ -98,19 +100,20 @@ app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
     const { token } = req.cookies;
     jwt.verify(token, secret, {}, async (err, info) => {
       if (err) {
-        return res.status(401).json({ message: "invalid token" });
+        return res.status(401).json({ message: "Invalid token" });
       }
       const { id } = req.params;
       const { title, summary, content } = req.body;
 
       const postDoc = await Post.findById(id);
       if (!postDoc) {
-        return res.status(404).json({ message: "post not found" });
+        return res.status(404).json({ message: "Post not found" });
       }
 
-      const isAuthor = JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+      const isAuthor =
+        JSON.stringify(postDoc.author) === JSON.stringify(info.id);
       if (!isAuthor) {
-        return res.status(403).json({ message: "you are not the author" });
+        return res.status(403).json({ message: "You are not the author" });
       }
 
       postDoc.title = title;
@@ -126,8 +129,6 @@ app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
     res.status(500).json({ message: "Server error", error });
   }
 });
-
-
 
 connectDB()
   .then(() => {

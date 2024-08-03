@@ -2,7 +2,6 @@ import { useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import axios from "axios";
-
 const CreatePost = () => {
   const [title, setTitle] = useState("");
   const [summary, setSummary] = useState("");
@@ -103,6 +102,7 @@ const CreatePost = () => {
       </form>
       {redirect && <p>Post created successfully!</p>}
     </div>
+    
   );
 };
 

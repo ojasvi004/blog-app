@@ -1,8 +1,9 @@
-import { UserDetails } from "../components/UserDetails";
-import axios from "axios";
 import { useEffect, useState, useContext } from "react";
 import { useParams, Link } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
+import axios from "axios";
+import { UserDetails } from "../components/UserDetails";
+import CreateComment from "../components/CreateComment";
 
 const PostPage = () => {
   const [postInfo, setPostInfo] = useState(null);
@@ -17,7 +18,7 @@ const PostPage = () => {
           `http://localhost:3000/api/v1/post/${id}`
         );
         setPostInfo(response.data);
-        console.log("Post Info:", response.data); 
+        console.log("Post Info:", response.data);
       } catch (error) {
         console.log("Error fetching post");
       }
@@ -33,7 +34,7 @@ const PostPage = () => {
             `http://localhost:3000/api/v1/author/${postInfo.author}`
           );
           setAuthorInfo(response.data);
-          console.log("author info:", response.data);
+          console.log("Author info:", response.data);
         } catch (error) {
           console.log("Error fetching author");
         }
@@ -48,7 +49,7 @@ const PostPage = () => {
         <>
           <h1>{postInfo.title}</h1>
           <div>
-            <p>By: {authorInfo?.username || "author not found"}</p>
+            <p>By: {authorInfo?.username || "Author not found"}</p>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
           </div>
           {userInfo?.id === postInfo.author && (
@@ -68,7 +69,11 @@ const PostPage = () => {
           <div dangerouslySetInnerHTML={{ __html: postInfo.content }} />
         </>
       ) : (
-        <p>loading</p>
+        <p>Loading...</p>
+      )}
+
+      {userInfo && postInfo && (
+        <CreateComment userId={userInfo.id} postId={postInfo._id} />
       )}
     </div>
   );

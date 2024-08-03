@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
-const { Schema, model } = mongoose;
+const { Schema } = mongoose; 
+
 
 const PostSchema = new Schema(
   {
@@ -22,6 +23,7 @@ const PostSchema = new Schema(
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",
+      required: true,
     },
   },
   {
