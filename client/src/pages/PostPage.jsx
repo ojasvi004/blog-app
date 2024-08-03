@@ -4,6 +4,7 @@ import { formatISO9075 } from "date-fns";
 import axios from "axios";
 import { UserDetails } from "../components/UserDetails";
 import CreateComment from "../components/CreateComment";
+import { FaRegComment } from "react-icons/fa";
 
 const PostPage = () => {
   const [postInfo, setPostInfo] = useState(null);
@@ -77,7 +78,7 @@ const PostPage = () => {
           )}
           {postInfo.cover && (
             <img
-              src={postInfo.cover}
+              src="https://i.pinimg.com/564x/b9/4c/07/b94c07c86752505af6675a25f07f5a75.jpg"
               alt="Cover"
               style={{ maxWidth: "300px", height: "300px" }}
             />
@@ -93,9 +94,21 @@ const PostPage = () => {
       )}
       {comments.length > 0 &&
         comments.map((comment) => (
-          <div key={comment._id}>
-            <div>By: {comment.user.username}</div>
+          <div
+            key={comment._id}
+            style={{
+              border: "2px solid #C8B6FF",
+              padding: "10px", 
+              marginBottom: "10px",
+              borderRadius: "10px"
+            }}
+          >
+            {" "}
+            <div>@{comment.user.username}</div>
             <p>{comment.content}</p>
+            <button>
+              <FaRegComment />
+            </button>
           </div>
         ))}
     </div>
