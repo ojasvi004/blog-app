@@ -10,6 +10,8 @@ const PostPage = () => {
   const [postInfo, setPostInfo] = useState(null);
   const [authorInfo, setAuthorInfo] = useState(null);
   const [comments, setComments] = useState([]);
+  const [replyToCommentId, setReplyToCommentId] = useState(null);
+  const [commentContent, setCommentContent] = useState("");
   const { userInfo } = useContext(UserDetails);
   const { id } = useParams();
 
@@ -20,9 +22,9 @@ const PostPage = () => {
           `http://localhost:3000/api/v1/post/${id}`
         );
         setPostInfo(response.data);
-        console.log("Post Info:", response.data);
+        console.log("post Info:", response.data);
       } catch (error) {
-        console.log("Error fetching post");
+        console.log("error fetching post");
       }
     };
     fetchPostInfo();
@@ -36,9 +38,9 @@ const PostPage = () => {
             `http://localhost:3000/api/v1/author/${postInfo.author}`
           );
           setAuthorInfo(response.data);
-          console.log("Author info:", response.data);
+          console.log("author info:", response.data);
         } catch (error) {
-          console.log("Error fetching author");
+          console.log("error fetching author");
         }
       };
       fetchAuthorInfo();
@@ -54,11 +56,104 @@ const PostPage = () => {
         setComments(response.data);
         console.log("comments:", response.data);
       } catch (error) {
-        console.log("Error fetching comments", error);
+        console.log("error fetching comments", error);
       }
     };
     fetchComments();
   }, [id]);
+
+  const handleReplyClick = (commentId) => {
+    setReplyToCommentId(commentId);
+  };
+
+  const handleCommentSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/v1/post/${id}/comment`,
+        {
+          userId: userInfo.id,
+          postId: id,
+          content: commentContent,
+          parent_comment: replyToCommentId,
+        },
+        { withCredentials: true }
+      );
+
+      if (response.status === 201) {
+        console.log("comment created successfully!");
+        setCommentContent("");
+        setReplyToCommentId(null);
+      } else {
+        console.log("failed to create comment");
+      }
+    } catch (error) {
+      console.log("Error creating comment:", error);
+      console.log("postId:", id);
+      console.log("userId:", userInfo.id);
+      console.log("parentCommentId:", replyToCommentId);
+    }
+  };
+
+  const organizeComments = (comments) => {
+    const commentMap = {};
+    const topLevelComments = [];
+
+    comments.forEach((comment) => {
+      commentMap[comment._id] = { ...comment, replies: [] };
+    });
+
+    comments.forEach((comment) => {
+      if (comment.parent_comment) {
+        const parent = commentMap[comment.parent_comment];
+        if (parent) {
+          parent.replies.push(commentMap[comment._id]);
+        }
+      } else {
+        topLevelComments.push(commentMap[comment._id]);
+      }
+    });
+
+    return topLevelComments;
+  };
+
+  const renderComments = (comments) =>
+    comments.map((comment) => (
+      <div
+        key={comment._id}
+        style={{
+          border: "2px solid #C8B6FF",
+          padding: "10px",
+          marginBottom: "10px",
+          borderRadius: "10px",
+        }}
+      >
+        <div>@{comment.user.username}</div>
+        <p>{comment.content}</p>
+        <button onClick={() => handleReplyClick(comment._id)}>
+          <FaRegComment />
+        </button>
+        {replyToCommentId === comment._id && (
+          <div>
+            <textarea
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+              placeholder="Reply here"
+            />
+            <button onClick={handleCommentSubmit}>Submit Reply</button>
+            <button onClick={() => setReplyToCommentId(null)}>Cancel</button>
+          </div>
+        )}
+        {comment.replies.length > 0 && (
+          <div style={{ marginLeft: "20px" }}>
+            {renderComments(comment.replies)}
+          </div>
+        )}
+      </div>
+    ));
+
+  const topLevelComments = organizeComments(comments);
 
   return (
     <div>
@@ -66,7 +161,7 @@ const PostPage = () => {
         <>
           <h1>{postInfo.title}</h1>
           <div>
-            <p>By: {authorInfo?.username || "author not found"}</p>
+            <p>By: {authorInfo?.username || "Author not found"}</p>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
           </div>
           {userInfo?.id === postInfo.author && (
@@ -92,25 +187,8 @@ const PostPage = () => {
       {userInfo && postInfo && (
         <CreateComment userId={userInfo.id} postId={postInfo._id} />
       )}
-      {comments.length > 0 &&
-        comments.map((comment) => (
-          <div
-            key={comment._id}
-            style={{
-              border: "2px solid #C8B6FF",
-              padding: "10px", 
-              marginBottom: "10px",
-              borderRadius: "10px"
-            }}
-          >
-            {" "}
-            <div>@{comment.user.username}</div>
-            <p>{comment.content}</p>
-            <button>
-              <FaRegComment />
-            </button>
-          </div>
-        ))}
+
+      {topLevelComments.length > 0 && renderComments(topLevelComments)}
     </div>
   );
 };

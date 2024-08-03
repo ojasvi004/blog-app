@@ -2,7 +2,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const CreateComment = ({ userId, postId, parentCommentId = null }) => {
+const CreateComment = ({ userId, postId, parentCommentId }) => {
   const [content, setContent] = useState("");
   const { id } = useParams();
 

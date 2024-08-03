@@ -8,18 +8,18 @@ export async function createComment(req, res) {
   const { userId, postId, content, parent_comment } = req.body;
 
   if (!userId || !postId || !content) {
-    return res.status(400).json({ msg: "missing required fields" });
+    return res.status(400).json({ msg: "Missing required fields" });
   }
 
   try {
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ msg: "user not found" });
+      return res.status(404).json({ msg: "User not found" });
     }
 
     const post = await Post.findById(postId);
     if (!post) {
-      return res.status(404).json({ msg: "post not found" });
+      return res.status(404).json({ msg: "Post not found" });
     }
 
     const newComment = await Comment.create({
@@ -31,9 +31,10 @@ export async function createComment(req, res) {
 
     res.status(201).json(newComment);
   } catch (error) {
-    res.status(500).json({ msg: "error creating comment" });
+    res.status(500).json({ msg: "Error creating comment", error });
   }
 }
+
 export async function getComments(req, res) {
   const { id } = req.params;
 
@@ -44,6 +45,6 @@ export async function getComments(req, res) {
 
     res.status(200).json(comments);
   } catch (error) {
-    res.status(500).json({ msg: "error fetching comments" });
+    res.status(500).json({ msg: "Error fetching comments", error });
   }
 }
