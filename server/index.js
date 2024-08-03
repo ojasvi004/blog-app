@@ -17,7 +17,10 @@ import fs from "fs";
 import path from "path";
 import { Post } from "./models/Post.model.js";
 import jwt from "jsonwebtoken";
-import { createComment } from "./controllers/comment.controller.js";
+import {
+  createComment,
+  getComments,
+} from "./controllers/comment.controller.js";
 import { fileURLToPath } from "url";
 
 dotenv.config();
@@ -59,7 +62,8 @@ app.get("/api/v1/post", post);
 app.post("/api/v1/logout", logout);
 app.get("/api/v1/post/:id", findPost);
 app.get("/api/v1/author/:id", findAuthor);
-app.post("/api/v1/post/:id/createComment", createComment);
+app.post("/api/v1/post/:id/comment", createComment);
+app.get("/api/v1/post/:id/comment", getComments);
 
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   const { originalname, path: tempPath } = req.file;

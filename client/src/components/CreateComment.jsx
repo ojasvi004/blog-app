@@ -11,7 +11,7 @@ const CreateComment = ({ userId, postId, parentCommentId = null }) => {
 
     try {
       const response = await axios.post(
-        `http://localhost:3000/api/v1/post/${id}/createComment`,
+        `http://localhost:3000/api/v1/post/${id}/comment`,
         {
           userId,
           postId,
@@ -34,7 +34,7 @@ const CreateComment = ({ userId, postId, parentCommentId = null }) => {
       console.log("parentCommentId:", parentCommentId);
     }
   };
-
+ 
   return (
     <div>
       <form onSubmit={handleSubmit}>

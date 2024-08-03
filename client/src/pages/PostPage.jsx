@@ -8,6 +8,7 @@ import CreateComment from "../components/CreateComment";
 const PostPage = () => {
   const [postInfo, setPostInfo] = useState(null);
   const [authorInfo, setAuthorInfo] = useState(null);
+  const [comments, setComments] = useState([]);
   const { userInfo } = useContext(UserDetails);
   const { id } = useParams();
 
@@ -43,13 +44,28 @@ const PostPage = () => {
     }
   }, [postInfo?.author]);
 
+  useEffect(() => {
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:3000/api/v1/post/${id}/comment`
+        );
+        setComments(response.data);
+        console.log("comments:", response.data);
+      } catch (error) {
+        console.log("Error fetching comments", error);
+      }
+    };
+    fetchComments();
+  }, [id]);
+
   return (
     <div>
       {postInfo ? (
         <>
           <h1>{postInfo.title}</h1>
           <div>
-            <p>By: {authorInfo?.username || "Author not found"}</p>
+            <p>By: {authorInfo?.username || "author not found"}</p>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
           </div>
           {userInfo?.id === postInfo.author && (
@@ -61,7 +77,7 @@ const PostPage = () => {
           )}
           {postInfo.cover && (
             <img
-              src="https://i.pinimg.com/564x/b9/4c/07/b94c07c86752505af6675a25f07f5a75.jpg"
+              src={postInfo.cover}
               alt="Cover"
               style={{ maxWidth: "300px", height: "300px" }}
             />
@@ -75,6 +91,13 @@ const PostPage = () => {
       {userInfo && postInfo && (
         <CreateComment userId={userInfo.id} postId={postInfo._id} />
       )}
+      {comments.length > 0 &&
+        comments.map((comment) => (
+          <div key={comment._id}>
+            <div>By: {comment.user.username}</div>
+            <p>{comment.content}</p>
+          </div>
+        ))}
     </div>
   );
 };

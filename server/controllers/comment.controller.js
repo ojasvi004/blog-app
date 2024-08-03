@@ -31,20 +31,19 @@ export async function createComment(req, res) {
 
     res.status(201).json(newComment);
   } catch (error) {
-    res.status(500).json({ msg: "error creating comment", error });
+    res.status(500).json({ msg: "error creating comment" });
   }
 }
-// export async function getComments(req, res) {
-//   try {
-//     const comments = Comment.find({ postId: req.params.postId }).sort({
-//       createdAt: -1,
-//     });
-//     res.status(201).json({
-//       count: comments.length,
-//       data: comments,
-//     });
-//   } catch (error) {
-//     res.status(500).json({ msg: error });
-//   }
-// }
-// app.get("/api/vi/post/:id");
+export async function getComments(req, res) {
+  const { id } = req.params;
+
+  try {
+    const comments = await Comment.find({ post: id })
+      .sort({ createdAt: -1 })
+      .populate("user", "username");
+
+    res.status(200).json(comments);
+  } catch (error) {
+    res.status(500).json({ msg: "error fetching comments" });
+  }
+}
