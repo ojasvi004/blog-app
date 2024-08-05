@@ -27,25 +27,28 @@ const LoginPage = () => {
       alert("Invalid credentials");
     }
     location.reload();
-
   };
 
   return (
     <form className="login" onSubmit={login}>
       <h1>Login</h1>
       <input
+        className="login"
         type="text"
         placeholder="username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
       <input
+        className="login"
         type="password"
         placeholder="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button type="submit">Login</button>
+      <button className="login-btn" type="submit">
+        Login
+      </button>
     </form>
   );
 };

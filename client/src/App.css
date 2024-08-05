@@ -3,8 +3,7 @@ body {
   background-color: #f0e6ef;
 }
 img {
-width: 100%;
-
+  width: 100%;
 }
 
 main {
@@ -26,7 +25,8 @@ header a {
 }
 header a.logo {
   font-weight: bold;
-  font-size: 3 rem;
+  font-size: 27px;
+  color: #5a4f6a;
 }
 header nav {
   display: flex;
@@ -66,6 +66,50 @@ div.post p.summary {
   margin: 10px 0;
   line-height: 1.8rem;
 }
-h1{
+h1 {
   text-align: center;
+}
+.post-btn {
+  border: 2px;
+  background-color: #cdb4db;
+  padding: 8px;
+  text-decoration: none;
+  width: 75px;
+  border-radius: 50px;
+  text-align: center;
+}
+.logout-btn {
+  margin-top: 5px;
+  font-size: 30px;
+}
+.logout-btn:hover {
+  color: #8c7b96;
+}
+
+form {
+  max-width: 350px;
+  margin: 0 auto;
+}
+.login-btn {
+  cursor: pointer;
+  display: block;
+  width: 100%;
+  background-color: #ffafcc;
+  border: 0;
+  color: #222;
+  border-radius: 5px;
+  padding: 8px 0;
+}
+
+.login {
+  display: block;
+  margin-bottom: 8px;
+  width: 100%;
+  padding: 10px 4px;
+  border: 2px;
+  border-radius: 5px;
+}
+
+h1 {
+  color: #5a4f6a;
 }

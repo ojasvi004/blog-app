@@ -2,6 +2,7 @@ import { useContext, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { UserDetails } from './UserDetails';
+import { IoLogOutOutline } from "react-icons/io5";
 
 const Header = () => {
   const { setUserInfo, userInfo } = useContext(UserDetails);
@@ -43,13 +44,13 @@ const Header = () => {
       <nav>
         {username ? (
           <>
-            <Link to="/create">Create post</Link>
-            <a href="/" onClick={logout}>Logout</a>
+            <Link to="/create" className='post-btn'>Post</Link>
+            <a href="/" onClick={logout} className='logout-btn'><IoLogOutOutline /></a>
           </>
         ) : (
           <>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Register</Link>
+            <Link to="/login" className='post-btn'>Login</Link>
+            <Link to="/register" className='post-btn'>Register</Link>
           </>
         )}
       </nav>

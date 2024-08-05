@@ -29,18 +29,22 @@ const RegisterPage = () => {
     <form onSubmit={register}>
       <h1>Register</h1>
       <input
+        className="login"
         type="text"
         value={username}
         placeholder="username"
         onChange={(e) => setUsername(e.target.value)}
       />
       <input
+        className="login"
         type="password"
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="password"
       />
-      <button type="submit">Register</button>
+      <button className="login-btn" type="submit">
+        Register
+      </button>
     </form>
   );
 };
