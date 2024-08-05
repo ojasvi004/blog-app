@@ -6,10 +6,7 @@ import {
   register,
   login,
   profile,
-  post,
   logout,
-  findPost,
-  findAuthor,
 } from "./controllers/auth.controller.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
@@ -22,6 +19,7 @@ import {
   getComments,
 } from "./controllers/comment.controller.js";
 import { fileURLToPath } from "url";
+import { post, findPost, findAuthor } from "./controllers/post.controller.js";
 
 dotenv.config();
 
