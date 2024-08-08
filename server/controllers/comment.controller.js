@@ -1,8 +1,6 @@
 import { Comment } from "../models/Comment.model.js";
 import { Post } from "../models/Post.model.js";
 import { User } from "../models/User.model.js";
-import express from "express";
-const app = express();
 
 export async function createComment(req, res) {
   const { userId, postId, content, parent_comment } = req.body;
@@ -37,7 +35,6 @@ export async function createComment(req, res) {
 
 export async function getComments(req, res) {
   const { id } = req.params;
-
   try {
     const comments = await Comment.find({ post: id })
       .sort({ createdAt: -1 })
@@ -46,5 +43,18 @@ export async function getComments(req, res) {
     res.status(200).json(comments);
   } catch (error) {
     res.status(500).json({ msg: "Error fetching comments", error });
+  }
+}
+
+export async function deleteComment(req, res) {
+  try {
+    const { commentId } = req.query;
+    if (!commentId) {
+      return res.status(400).json({ msg: "comment id not found" });
+    }
+    await Comment.findOneAndDelete({ _id: commentId });
+    res.status(200).json({ msg: "comment deleted successfully!!!" });
+  } catch (error) {
+    res.status(500).json({ msg: error });
   }
 }

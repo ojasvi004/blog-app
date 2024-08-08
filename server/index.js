@@ -17,6 +17,7 @@ import jwt from "jsonwebtoken";
 import {
   createComment,
   getComments,
+  deleteComment,
 } from "./controllers/comment.controller.js";
 import { fileURLToPath } from "url";
 import { post, findPost, findAuthor } from "./controllers/post.controller.js";
@@ -62,6 +63,7 @@ app.get("/api/v1/post/:id", findPost);
 app.get("/api/v1/author/:id", findAuthor);
 app.post("/api/v1/post/:id/comment", createComment);
 app.get("/api/v1/post/:id/comment", getComments);
+app.delete("/api/v1/post/:id/comment", deleteComment);
 
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   const { originalname, path: tempPath } = req.file;
@@ -88,56 +90,49 @@ app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   });
 });
 
-
 app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
   try {
     let newPath = null;
     if (req.file) {
-      const { originalname, path: tempPath } = req.file;
-      const ext = originalname.split(".").pop();
-      newPath = `${tempPath}.${ext}`;
-      fs.renameSync(tempPath, newPath);
+      const { originalname, path } = req.file;
+      const parts = originalname.split(".");
+      const ext = parts[parts.length - 1];
+      newPath = path + "." + ext;
+      fs.renameSync(path, newPath);
     }
 
     const { token } = req.cookies;
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
-    }
+    jwt.verify(token, secret, {}, async (err, info) => {
+      if (err) {
+        return res.status(401).json({ message: "Invalid token" });
+      }
+      const { id } = req.params;
+      const { title, summary, content } = req.body;
 
-    let info;
-    try {
-      info = jwt.verify(token, secret);
-    } catch (error) {
-      console.error("Token verification error:", error);
-      return res.status(401).json({ message: "Invalid token" });
-    }
+      const postDoc = await Post.findById(id);
+      if (!postDoc) {
+        return res.status(404).json({ message: "Post not found" });
+      }
 
-    const { id } = req.params;
-    const { title, summary, content } = req.body;
+      const isAuthor =
+        JSON.stringify(postDoc.author) === JSON.stringify(info.id);
+      if (!isAuthor) {
+        return res.status(403).json({ message: "You are not the author" });
+      }
 
-    const postDoc = await Post.findById(id);
-    if (!postDoc) {
-      return res.status(404).json({ message: "Post not found" });
-    }
-
-    if (postDoc.author.toString() !== info.id.toString()) {
-      return res.status(403).json({ message: "You are not the author" });
-    }
-
-    postDoc.title = title;
-    postDoc.summary = summary;
-    postDoc.content = content;
-    if (newPath) {
-      postDoc.cover = newPath;
-    }
-    await postDoc.save();
-    res.json(postDoc);
+      postDoc.title = title;
+      postDoc.summary = summary;
+      postDoc.content = content;
+      if (newPath) {
+        postDoc.cover = newPath;
+      }
+      await postDoc.save();
+      res.json(postDoc);
+    });
   } catch (error) {
-    console.error("Server error:", error);
     res.status(500).json({ message: "Server error", error });
   }
 });
-
 
 connectDB()
   .then(() => {

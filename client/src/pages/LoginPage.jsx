@@ -30,7 +30,7 @@ const LoginPage = () => {
   };
 
   return (
-    <form className="login" onSubmit={login}>
+    <form className="login-form" onSubmit={login}>
       <h1>Login</h1>
       <input
         className="login"

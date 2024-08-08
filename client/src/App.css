@@ -86,7 +86,7 @@ h1 {
   color: #8c7b96;
 }
 
-form {
+.login-form {
   max-width: 350px;
   margin: 0 auto;
 }

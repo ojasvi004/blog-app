@@ -26,7 +26,7 @@ const RegisterPage = () => {
   }
 
   return (
-    <form onSubmit={register}>
+    <form className="login-form" onSubmit={register}>
       <h1>Register</h1>
       <input
         className="login"

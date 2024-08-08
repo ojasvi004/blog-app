@@ -5,6 +5,7 @@ import axios from "axios";
 import { UserDetails } from "../components/UserDetails";
 import CreateComment from "../components/CreateComment";
 import { FaRegComment } from "react-icons/fa";
+import { FaRegTrashAlt } from "react-icons/fa";
 
 const PostPage = () => {
   const [postInfo, setPostInfo] = useState(null);
@@ -22,9 +23,9 @@ const PostPage = () => {
           `http://localhost:3000/api/v1/post/${id}`
         );
         setPostInfo(response.data);
-        console.log("post Info:", response.data);
+        console.log("Post Info:", response.data);
       } catch (error) {
-        console.log("error fetching post");
+        console.log("Error fetching post:", error);
       }
     };
     fetchPostInfo();
@@ -38,9 +39,9 @@ const PostPage = () => {
             `http://localhost:3000/api/v1/author/${postInfo.author}`
           );
           setAuthorInfo(response.data);
-          console.log("author info:", response.data);
+          console.log("Author Info:", response.data);
         } catch (error) {
-          console.log("error fetching author");
+          console.log("Error fetching author:", error);
         }
       };
       fetchAuthorInfo();
@@ -54,9 +55,9 @@ const PostPage = () => {
           `http://localhost:3000/api/v1/post/${id}/comment`
         );
         setComments(response.data);
-        console.log("comments:", response.data);
+        console.log("Comments:", response.data);
       } catch (error) {
-        console.log("error fetching comments", error);
+        console.log("Error fetching comments:", error);
       }
     };
     fetchComments();
@@ -64,6 +65,20 @@ const PostPage = () => {
 
   const handleReplyClick = (commentId) => {
     setReplyToCommentId(commentId);
+    console.log("Reply to Comment ID:", commentId);
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    try {
+      await axios.delete(`http://localhost:3000/api/v1/post/${id}/comment`, {
+        params: { commentId },
+      });
+
+      setComments(comments.filter((comment) => comment._id !== commentId));
+      console.log(`deleted comment id: ${commentId}`);
+    } catch (error) {
+      console.log("error deleting comment");
+    }
   };
 
   const handleCommentSubmit = async (e) => {
@@ -82,17 +97,18 @@ const PostPage = () => {
       );
 
       if (response.status === 201) {
-        console.log("comment created successfully!");
+        console.log("Comment created successfully!");
         setCommentContent("");
         setReplyToCommentId(null);
+        setComments([...comments, response.data]);
       } else {
-        console.log("failed to create comment");
+        console.log("Failed to create comment");
       }
     } catch (error) {
       console.log("Error creating comment:", error);
-      console.log("postId:", id);
-      console.log("userId:", userInfo.id);
-      console.log("parentCommentId:", replyToCommentId);
+      console.log("Post ID:", id);
+      console.log("User ID:", userInfo.id);
+      console.log("Parent Comment ID:", replyToCommentId);
     }
   };
 
@@ -134,6 +150,12 @@ const PostPage = () => {
         <button onClick={() => handleReplyClick(comment._id)}>
           <FaRegComment />
         </button>
+        {userInfo?.id === comment.user._id && (
+          <button onClick={() => handleDeleteComment(comment._id)}>
+            <FaRegTrashAlt />
+          </button>
+        )}
+
         {replyToCommentId === comment._id && (
           <div>
             <textarea
