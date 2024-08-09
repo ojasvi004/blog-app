@@ -42,3 +42,15 @@ export async function findAuthor(req, res) {
     res.status(500).json({ msg: "server error" });
   }
 }
+
+export async function deletePost(req, res) {
+  try {
+    const post = await Post.findOneAndDelete({ _id: req.params.id });
+    if (!post) {
+      return res.status(404).json({ msg: "no post found" });
+    }
+    res.status(200).json({ msg: req.params.id });
+  } catch (error) {
+    res.status(500).json({ msg: error });
+  }
+}

@@ -20,7 +20,12 @@ import {
   deleteComment,
 } from "./controllers/comment.controller.js";
 import { fileURLToPath } from "url";
-import { post, findPost, findAuthor } from "./controllers/post.controller.js";
+import {
+  post,
+  findPost,
+  findAuthor,
+  deletePost,
+} from "./controllers/post.controller.js";
 
 dotenv.config();
 
@@ -60,6 +65,7 @@ app.get("/api/v1/profile", profile);
 app.get("/api/v1/post", post);
 app.post("/api/v1/logout", logout);
 app.get("/api/v1/post/:id", findPost);
+app.delete("/api/v1/post/:id", deletePost);
 app.get("/api/v1/author/:id", findAuthor);
 app.post("/api/v1/post/:id/comment", createComment);
 app.get("/api/v1/post/:id/comment", getComments);

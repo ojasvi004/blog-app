@@ -21,6 +21,6 @@ const CommentSchema = new mongoose.Schema({
     ref: "Comment",
     default: null,
   },
-})
+});
 
 export const Comment = mongoose.model("Comment", CommentSchema);

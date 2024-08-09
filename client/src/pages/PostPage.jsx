@@ -1,11 +1,12 @@
 import { useEffect, useState, useContext } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, Navigate } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
 import axios from "axios";
 import { UserDetails } from "../components/UserDetails";
 import CreateComment from "../components/CreateComment";
 import { FaRegComment } from "react-icons/fa";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 const PostPage = () => {
   const [postInfo, setPostInfo] = useState(null);
@@ -15,6 +16,7 @@ const PostPage = () => {
   const [commentContent, setCommentContent] = useState("");
   const { userInfo } = useContext(UserDetails);
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPostInfo = async () => {
@@ -111,7 +113,15 @@ const PostPage = () => {
       console.log("Parent Comment ID:", replyToCommentId);
     }
   };
-
+  const handleDeletePost = async () => {
+    try {
+      await axios.delete(`http://localhost:3000/api/v1/post/${id}`);
+      console.log("post successfuly deleted");
+      navigate("/");
+    } catch (error) {
+      console.log("error deleting post", error);
+    }
+  };
   const organizeComments = (comments) => {
     const commentMap = {};
     const topLevelComments = [];
@@ -191,6 +201,7 @@ const PostPage = () => {
               <Link to={`/edit/${postInfo._id}`} className="edit">
                 Edit Post
               </Link>
+              <button onClick={handleDeletePost}>Delete</button>
             </div>
           )}
           {postInfo.cover && (
