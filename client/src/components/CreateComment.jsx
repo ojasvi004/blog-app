@@ -34,20 +34,21 @@ const CreateComment = ({ userId, postId, parentCommentId }) => {
       console.log("parentCommentId:", parentCommentId);
     }
   };
- 
+
   return (
     <div>
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="content">Comment</label>
+          <label htmlFor="content"></label>
           <textarea
             id="content"
             value={content}
             onChange={(e) => setContent(e.target.value)}
+            placeholder="add comment"
             required
           ></textarea>
         </div>
-        <button type="submit">Post Comment</button>
+        <button type="submit">comment</button>
       </form>
     </div>
   );

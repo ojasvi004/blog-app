@@ -173,7 +173,7 @@ const PostPage = () => {
               onChange={(e) => setCommentContent(e.target.value)}
               placeholder="Reply here"
             />
-            <button onClick={handleCommentSubmit}>Submit Reply</button>
+            <button onClick={handleCommentSubmit}>Submit</button>
             <button onClick={() => setReplyToCommentId(null)}>Cancel</button>
           </div>
         )}
@@ -192,16 +192,21 @@ const PostPage = () => {
       {postInfo ? (
         <>
           <h1>{postInfo.title}</h1>
-          <div>
+          <div className="author-info">
             <p>By: {authorInfo?.username || "Author not found"}</p>
             <time>{formatISO9075(new Date(postInfo.createdAt))}</time>
           </div>
           {userInfo?.id === postInfo.author && (
             <div>
-              <Link to={`/edit/${postInfo._id}`} className="edit">
-                Edit Post
-              </Link>
-              <button onClick={handleDeletePost}>Delete</button>
+              <button className="edit-delete">
+                <Link to={`/edit/${postInfo._id}`} className="edit">
+                  Edit
+                </Link>
+              </button>
+
+              <button className="edit-delete" onClick={handleDeletePost}>
+                Delete
+              </button>
             </div>
           )}
           {postInfo.cover && (
@@ -209,7 +214,7 @@ const PostPage = () => {
               src={`http://localhost:3000/${postInfo.cover}`}
               alt="Cover"
               style={{ width: "300px", height: "300px", objectFit: "cover" }}
-              />
+            />
           )}
           <div dangerouslySetInnerHTML={{ __html: postInfo.content }} />
         </>
