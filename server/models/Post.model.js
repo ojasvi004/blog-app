@@ -1,6 +1,5 @@
 import mongoose from "mongoose";
-const { Schema } = mongoose; 
-
+const { Schema } = mongoose;
 
 const PostSchema = new Schema(
   {
@@ -18,7 +17,6 @@ const PostSchema = new Schema(
     },
     cover: {
       type: String,
-      required: true,
     },
     author: {
       type: Schema.Types.ObjectId,

@@ -102,7 +102,6 @@ const CreatePost = () => {
       </form>
       {redirect && <p>Post created successfully!</p>}
     </div>
-    
   );
 };
 

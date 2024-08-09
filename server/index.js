@@ -72,28 +72,40 @@ app.get("/api/v1/post/:id/comment", getComments);
 app.delete("/api/v1/post/:id/comment", deleteComment);
 
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
-  const { originalname, path: tempPath } = req.file;
-  const parts = originalname.split(".");
-  const ext = parts[parts.length - 1];
-  const newPath = tempPath + "." + ext;
-  fs.renameSync(tempPath, newPath);
+  try {
+    let coverPath = null;
 
-  const { token } = req.cookies;
-  jwt.verify(token, secret, async (error, info) => {
-    if (error) {
-      return res.status(401).json({ msg: "Invalid token" });
+    if (req.file) {
+      const { originalname, path: tempPath } = req.file;
+      const ext = path.extname(originalname);
+      coverPath = tempPath + ext;
+
+      await fs.promises.rename(tempPath, coverPath);
     }
 
-    const { title, summary, content } = req.body;
-    const postDoc = await Post.create({
-      title,
-      summary,
-      content,
-      cover: newPath,
-      author: info.id,
+    const { token } = req.cookies;
+    jwt.verify(token, secret, async (error, info) => {
+      if (error) {
+        return res.status(401).json({ msg: "Invalid token" });
+      }
+
+      const { title, summary, content } = req.body;
+      try {
+        const postDoc = await Post.create({
+          title,
+          summary,
+          content,
+          cover: coverPath,
+          author: info.id,
+        });
+        res.status(201).json(postDoc);
+      } catch (dbError) {
+        res.status(500).json({ msg: "Database operation failed" });
+      }
     });
-    res.status(201).json(postDoc);
-  });
+  } catch (err) {
+    res.status(500).json({ msg: "File upload failed" });
+  }
 });
 
 app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
@@ -103,38 +115,30 @@ app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
       const { originalname, path } = req.file;
       const parts = originalname.split(".");
       const ext = parts[parts.length - 1];
-      newPath = path + "." + ext;
+      newPath = `${path}.${ext}`;
       fs.renameSync(path, newPath);
     }
 
-    const { token } = req.cookies;
-    jwt.verify(token, secret, {}, async (err, info) => {
-      if (err) {
-        return res.status(401).json({ message: "Invalid token" });
-      }
-      const { id } = req.params;
-      const { title, summary, content } = req.body;
+    const { id } = req.params;
+    const { title, summary, content } = req.body;
 
-      const postDoc = await Post.findById(id);
-      if (!postDoc) {
-        return res.status(404).json({ message: "Post not found" });
-      }
+    const postDoc = await Post.findByIdAndUpdate(id);
+    if (!postDoc) {
+      return res.status(404).json({ message: "Post not found" });
+    }
 
-      const isAuthor =
-        JSON.stringify(postDoc.author) === JSON.stringify(info.id);
-      if (!isAuthor) {
-        return res.status(403).json({ message: "You are not the author" });
-      }
+    if (String(postDoc.author) !== String(info.id)) {
+      return res.status(403).json({ message: "You are not the author" });
+    }
 
-      postDoc.title = title;
-      postDoc.summary = summary;
-      postDoc.content = content;
-      if (newPath) {
-        postDoc.cover = newPath;
-      }
-      await postDoc.save();
-      res.json(postDoc);
-    });
+    postDoc.title = title;
+    postDoc.summary = summary;
+    postDoc.content = content;
+    if (newPath) {
+      postDoc.cover = newPath;
+    }
+    await postDoc.save();
+    res.json(postDoc);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });
   }

@@ -116,7 +116,7 @@ const PostPage = () => {
   const handleDeletePost = async () => {
     try {
       await axios.delete(`http://localhost:3000/api/v1/post/${id}`);
-      console.log("post successfuly deleted");
+      console.log("post successfully deleted");
       navigate("/");
     } catch (error) {
       console.log("error deleting post", error);
@@ -206,10 +206,10 @@ const PostPage = () => {
           )}
           {postInfo.cover && (
             <img
-              src="https://i.pinimg.com/564x/b9/4c/07/b94c07c86752505af6675a25f07f5a75.jpg"
+              src={`http://localhost:3000/${postInfo.cover}`}
               alt="Cover"
-              style={{ maxWidth: "300px", height: "300px" }}
-            />
+              style={{ width: "300px", height: "300px", objectFit: "cover" }}
+              />
           )}
           <div dangerouslySetInnerHTML={{ __html: postInfo.content }} />
         </>

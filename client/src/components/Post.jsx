@@ -3,24 +3,25 @@ import { Link } from "react-router-dom";
 
 const Post = ({ _id, title, summary, cover, content, createdAt, author }) => {
   return (
-    <div className="post">
-      <div className="image">
-        <Link to={`/post/${_id}`}>
-          <img
-            src={
-              "https://i.pinimg.com/564x/b9/4c/07/b94c07c86752505af6675a25f07f5a75.jpg"
-            }
-            alt=""
-          />
-        </Link>
-      </div>
+    <div className="post" style={{ display: "flex", alignItems: "flex-start" }}>
+      {cover && (
+        <div className="image" style={{ marginRight: "20px" }}>
+          <Link to={`/post/${_id}`}>
+            <img
+              src={`http://localhost:3000/${cover}`}
+              alt="Cover"
+              style={{ width: "200px", height: "200px", objectFit: "cover" }}
+            />
+          </Link>
+        </div>
+      )}
 
-      <div className="texts">
+      <div className="texts" style={{ flex: 1 }}>
         <Link to={`/post/${_id}`}>
           <h2>{title}</h2>
         </Link>
         <p className="info">
-          <a href="" className="author">
+          <a href="#" className="author">
             {author?.username}
           </a>
           <time>{formatISO9075(new Date(createdAt))}</time>

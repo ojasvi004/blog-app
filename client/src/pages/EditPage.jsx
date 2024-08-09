@@ -17,9 +17,7 @@ const EditPage = () => {
   useEffect(() => {
     const fetchPostData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/v1/post/${id}`
-        );
+        const response = await axios.get(`http://localhost:3000/api/v1/post/${id}`);
         const post = response.data;
         if (post) {
           setTitle(post.title);
