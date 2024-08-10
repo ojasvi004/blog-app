@@ -2,30 +2,18 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./db/index.js";
-import {
-  register,
-  login,
-  profile,
-  logout,
-} from "./controllers/auth.controller.js";
 import cookieParser from "cookie-parser";
 import multer from "multer";
 import fs from "fs";
 import path from "path";
 import { Post } from "./models/Post.model.js";
 import jwt from "jsonwebtoken";
-import {
-  createComment,
-  getComments,
-  deleteComment,
-} from "./controllers/comment.controller.js";
+
 import { fileURLToPath } from "url";
-import {
-  post,
-  findPost,
-  findAuthor,
-  deletePost,
-} from "./controllers/post.controller.js";
+
+import { router as postRouter } from "./routes/post.route.js";
+import { router as authRouter } from "./routes/auth.route.js";
+import { router as commentRouter } from "./routes/comment.route.js";
 
 dotenv.config();
 
@@ -48,6 +36,9 @@ app.use(
   })
 );
 
+app.use("/api/v1", postRouter);
+app.use("/api/v1", authRouter);
+app.use("/api/v1/post", commentRouter);
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -59,22 +50,9 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-app.post("/api/v1/register", register);
-app.post("/api/v1/login", login);
-app.get("/api/v1/profile", profile);
-app.get("/api/v1/post", post);
-app.post("/api/v1/logout", logout);
-app.get("/api/v1/post/:id", findPost);
-app.delete("/api/v1/post/:id", deletePost);
-app.get("/api/v1/author/:id", findAuthor);
-app.post("/api/v1/post/:id/comment", createComment);
-app.get("/api/v1/post/:id/comment", getComments);
-app.delete("/api/v1/post/:id/comment", deleteComment);
-
 app.post("/api/v1/post", upload.single("file"), async (req, res) => {
   try {
     let coverPath = null;
-
     if (req.file) {
       const { originalname, path: tempPath } = req.file;
       const ext = path.extname(originalname);
@@ -111,14 +89,6 @@ app.post("/api/v1/post", upload.single("file"), async (req, res) => {
 app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
   try {
     let newPath = null;
-    if (req.file) {
-      const { originalname, path } = req.file;
-      const parts = originalname.split(".");
-      const ext = parts[parts.length - 1];
-      newPath = `${path}.${ext}`;
-      fs.renameSync(path, newPath);
-    }
-
     const { id } = req.params;
     const { title, summary, content } = req.body;
 

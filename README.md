@@ -1,2 +1,2 @@
 # blog-app
-blog app based on MERN stack
+blog app built with the MERN stack
