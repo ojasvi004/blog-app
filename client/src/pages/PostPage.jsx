@@ -214,6 +214,7 @@ const PostPage = () => {
               src={`http://localhost:3000/${postInfo.cover}`}
               alt="Cover"
               style={{ width: "300px", height: "300px", objectFit: "cover" }}
+              className="cover-img"
             />
           )}
           <div dangerouslySetInnerHTML={{ __html: postInfo.content }} />

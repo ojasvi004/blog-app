@@ -39,6 +39,7 @@ app.use(
 app.use("/api/v1", postRouter);
 app.use("/api/v1", authRouter);
 app.use("/api/v1/post", commentRouter);
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -88,17 +89,21 @@ app.post("/api/v1/post", upload.single("file"), async (req, res) => {
 
 app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
   try {
-    let newPath = null;
     const { id } = req.params;
     const { title, summary, content } = req.body;
 
-    const postDoc = await Post.findByIdAndUpdate(id);
+    const postDoc = await Post.findById(id);
     if (!postDoc) {
       return res.status(404).json({ message: "Post not found" });
     }
 
-    if (String(postDoc.author) !== String(info.id)) {
-      return res.status(403).json({ message: "You are not the author" });
+    let newPath = null;
+    if (req.file) {
+      const { originalname, path: tempPath } = req.file;
+      const ext = path.extname(originalname);
+      newPath = tempPath + ext;
+
+      await fs.promises.rename(tempPath, newPath);
     }
 
     postDoc.title = title;
@@ -108,6 +113,7 @@ app.put("/api/v1/post/:id", upload.single("file"), async (req, res) => {
       postDoc.cover = newPath;
     }
     await postDoc.save();
+
     res.json(postDoc);
   } catch (error) {
     res.status(500).json({ message: "Server error", error });

@@ -142,3 +142,9 @@ textarea {
 .edit-delete:hover {
   background-color: #cdb4db;
 }
+
+.cover-img {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
