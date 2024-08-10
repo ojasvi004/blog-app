@@ -8,7 +8,7 @@ const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
 export async function createComment(req, res) {
   const { userId, postId, content, parent_comment } = req.body;
   try {
-    const { token } = req.cookies;
+    const token  = req.cookies.access_token;
     if (!token) {
       return res.status(401).json({ msg: "token not provided" });
     }
@@ -49,22 +49,18 @@ export async function getComments(req, res) {
 
 export async function deleteComment(req, res) {
   try {
-    const { token } = req.cookies;
-    if (!token) {
-      return res.status(401).json({ msg: "token not provided" });
+    const { commentId } = req.query;
+    if (!commentId) {
+      return res.status(400).json({ msg: "comment id not found" });
     }
-    jwt.verify(token, secret, async (error) => {
-      if (error) {
-        return res.status(401).json({ msg: "invalid token" });
-      }
-      const { commentId } = req.query;
-      if (!commentId) {
-        return res.status(400).json({ msg: "comment id not found" });
-      }
-      await Comment.findOneAndDelete({ _id: commentId });
-      res.status(201).json({ msg: "comment deleted successfully!!!" });
-    });
+
+    const result = await Comment.findByIdAndDelete(commentId); 
+    if (!result) {
+      return res.status(404).json({ msg: "comment not found" });
+    }
+
+    res.status(204).end(); 
   } catch (error) {
-    res.status(500).json({ msg: error });
+    res.status(500).json({ msg: error});
   }
 }

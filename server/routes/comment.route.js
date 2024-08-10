@@ -1,6 +1,6 @@
 import { Router } from "express";
 const router = Router();
-
+import { verifyToken } from "../middlewares/auth.middleware.js";
 import {
   createComment,
   getComments,
@@ -11,6 +11,6 @@ router
   .route("/:id/comment")
   .get(getComments)
   .post(createComment)
-  .delete(deleteComment);
+  .delete(verifyToken, deleteComment);
 
 export { router };

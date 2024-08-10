@@ -46,7 +46,7 @@ export async function findAuthor(req, res) {
 
 export async function deletePost(req, res) {
   try {
-    const { token } = req.cookies;
+    const token = req.cookies.access_token;
     if (!token) {
       return res.status(401).json({ msg: "token not provided" });
     }
@@ -67,4 +67,3 @@ export async function deletePost(req, res) {
     res.status(500).json({ msg: error.message });
   }
 }
-

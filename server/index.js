@@ -62,7 +62,7 @@ app.post("/api/v1/post", upload.single("file"), async (req, res) => {
       await fs.promises.rename(tempPath, coverPath);
     }
 
-    const { token } = req.cookies;
+    const  token  = req.cookies.access_token;
     jwt.verify(token, secret, async (error, info) => {
       if (error) {
         return res.status(401).json({ msg: "Invalid token" });

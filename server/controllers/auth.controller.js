@@ -41,7 +41,7 @@ export async function register(req, res) {
 }
 
 export async function profile(req, res) {
-  const { token } = req.cookies;
+  const token = req.cookies.access_token; 
   if (!token) {
     return res.status(401).json({ msg: "Token not provided" });
   }
@@ -66,7 +66,7 @@ export async function login(req, res) {
             console.error(error);
             return res.status(500).json({ msg: "Server error" });
           }
-          res.cookie("token", token, { httpOnly: true });
+          res.cookie("access_token", token, { httpOnly: true, secure: true });
           res.status(200).json({ msg: "Login successful" });
         });
       } else {
@@ -82,6 +82,5 @@ export async function login(req, res) {
 }
 
 export async function logout(req, res) {
-  const { token } = req.cookies;
-  res.cookie("token", "").json("ok");
+  res.cookie("access_token", "", { httpOnly: true, secure: true }).json("ok");
 }
