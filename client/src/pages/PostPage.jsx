@@ -69,17 +69,17 @@ const PostPage = () => {
     setReplyToCommentId(commentId);
     console.log("Reply to Comment ID:", commentId);
   };
-
   const handleDeleteComment = async (commentId) => {
     try {
       await axios.delete(`http://localhost:3000/api/v1/post/${id}/comment`, {
         params: { commentId },
+        withCredentials: true,
       });
 
       setComments(comments.filter((comment) => comment._id !== commentId));
-      console.log(`deleted comment id: ${commentId}`);
+      console.log(`Deleted comment id: ${commentId}`);
     } catch (error) {
-      console.log("error deleting comment");
+      console.error("Error deleting comment:", error);
     }
   };
 
@@ -115,7 +115,9 @@ const PostPage = () => {
   };
   const handleDeletePost = async () => {
     try {
-      await axios.delete(`http://localhost:3000/api/v1/post/${id}`);
+      await axios.delete(`http://localhost:3000/api/v1/post/${id}`, {
+        withCredentials: true,
+      });
       console.log("post successfully deleted");
       navigate("/");
     } catch (error) {

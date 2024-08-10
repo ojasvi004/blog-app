@@ -40,6 +40,20 @@ export async function register(req, res) {
   }
 }
 
+export async function profile(req, res) {
+  const { token } = req.cookies;
+  if (!token) {
+    return res.status(401).json({ msg: "Token not provided" });
+  }
+
+  jwt.verify(token, secret, (error, info) => {
+    if (error) {
+      return res.status(401).json({ msg: "Invalid token" });
+    }
+
+    res.json(info);
+  });
+}
 export async function login(req, res) {
   const { username, password } = req.body;
   try {
@@ -65,21 +79,6 @@ export async function login(req, res) {
     console.error(error);
     res.status(500).json({ msg: error.message });
   }
-}
-
-export async function profile(req, res) {
-  const { token } = req.cookies;
-  if (!token) {
-    return res.status(401).json({ msg: "Token not provided" });
-  }
-
-  jwt.verify(token, secret, (error, info) => {
-    if (error) {
-      return res.status(401).json({ msg: "Invalid token" });
-    }
-
-    res.json(info);
-  });
 }
 
 export async function logout(req, res) {

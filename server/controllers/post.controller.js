@@ -4,6 +4,7 @@ import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
 import multer from "multer";
+const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
 
 export async function post(req, res) {
   try {
@@ -45,12 +46,25 @@ export async function findAuthor(req, res) {
 
 export async function deletePost(req, res) {
   try {
-    const post = await Post.findOneAndDelete({ _id: req.params.id });
-    if (!post) {
-      return res.status(404).json({ msg: "no post found" });
+    const { token } = req.cookies;
+    if (!token) {
+      return res.status(401).json({ msg: "token not provided" });
     }
-    res.status(200).json({ msg: req.params.id });
+
+    jwt.verify(token, secret, async (error) => {
+      if (error) {
+        return res.status(401).json({ msg: "invalid token" });
+      }
+
+      const post = await Post.findOneAndDelete({ _id: req.params.id });
+      if (!post) {
+        return res.status(404).json({ msg: "No post found" });
+      }
+
+      res.status(200).json({ msg: "deleted successfully" });
+    });
   } catch (error) {
-    res.status(500).json({ msg: error });
+    res.status(500).json({ msg: error.message });
   }
 }
+
