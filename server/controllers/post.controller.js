@@ -5,6 +5,8 @@ import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
 import multer from "multer";
 const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
+import path from "path";
+import fs from "fs";
 
 export async function post(req, res) {
   try {
@@ -67,3 +69,72 @@ export async function deletePost(req, res) {
     res.status(500).json({ msg: error.message });
   }
 }
+
+export const createPost = async (req, res) => {
+  try {
+    let coverPath = null;
+    if (req.file) {
+      const { originalname, path: tempPath } = req.file;
+      const ext = path.extname(originalname);
+      coverPath = tempPath + ext;
+
+      await fs.promises.rename(tempPath, coverPath);
+    }
+
+    const token = req.cookies.access_token;
+    jwt.verify(token, secret, async (error, info) => {
+      if (error) {
+        return res.status(401).json({ msg: "Invalid token" });
+      }
+
+      const { title, summary, content } = req.body;
+      try {
+        const postDoc = await Post.create({
+          title,
+          summary,
+          content,
+          cover: coverPath,
+          author: info.id,
+        });
+        res.status(201).json(postDoc);
+      } catch (dbError) {
+        res.status(500).json({ msg: dbError });
+      }
+    });
+  } catch (err) {
+    res.status(500).json({ msg: "file upload failed" });
+  }
+};
+
+export const updatePost = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, summary, content } = req.body;
+
+    const postDoc = await Post.findById(id);
+    if (!postDoc) {
+      return res.status(404).json({ message: "post not found" });
+    }
+
+    let newPath = null;
+    if (req.file) {
+      const { originalname, path: tempPath } = req.file;
+      const ext = path.extname(originalname);
+      newPath = tempPath + ext;
+
+      await fs.promises.rename(tempPath, newPath);
+    }
+
+    postDoc.title = title;
+    postDoc.summary = summary;
+    postDoc.content = content;
+    if (newPath) {
+      postDoc.cover = newPath;
+    }
+
+    await postDoc.save();
+    res.json(postDoc);
+  } catch (error) {
+    res.status(500).json({ message: "server error" });
+  }
+};

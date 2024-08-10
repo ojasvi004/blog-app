@@ -5,17 +5,6 @@ import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
 import multer from "multer";
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, file.fieldname + "-" + Date.now());
-  },
-});
-
-const upload = multer({ storage: storage });
-
 const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
 
 export async function register(req, res) {
@@ -41,7 +30,7 @@ export async function register(req, res) {
 }
 
 export async function profile(req, res) {
-  const token = req.cookies.access_token; 
+  const token = req.cookies.access_token;
   if (!token) {
     return res.status(401).json({ msg: "Token not provided" });
   }
