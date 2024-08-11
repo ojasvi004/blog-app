@@ -2,17 +2,17 @@ import jwt from "jsonwebtoken";
 import { Comment } from "../models/Comment.model.js";
 import { Post } from "../models/Post.model.js";
 import { User } from "../models/User.model.js";
-
-const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function createComment(req, res) {
   const { userId, postId, content, parent_comment } = req.body;
   try {
-    const token  = req.cookies.access_token;
+    const token = req.cookies.access_token;
     if (!token) {
       return res.status(401).json({ msg: "token not provided" });
     }
-    jwt.verify(token, secret, async (error) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (error) => {
       if (error) {
         return res.status(401).json({ msg: "invalid token" });
       }
@@ -54,13 +54,13 @@ export async function deleteComment(req, res) {
       return res.status(400).json({ msg: "comment id not found" });
     }
 
-    const result = await Comment.findByIdAndDelete(commentId); 
+    const result = await Comment.findByIdAndDelete(commentId);
     if (!result) {
       return res.status(404).json({ msg: "comment not found" });
     }
 
-    res.status(204).end(); 
+    res.status(204).end();
   } catch (error) {
-    res.status(500).json({ msg: error});
+    res.status(500).json({ msg: error });
   }
 }

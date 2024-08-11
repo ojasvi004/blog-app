@@ -4,9 +4,10 @@ import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
 import multer from "multer";
-const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
 import path from "path";
 import fs from "fs";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function post(req, res) {
   try {
@@ -53,7 +54,7 @@ export async function deletePost(req, res) {
       return res.status(401).json({ msg: "token not provided" });
     }
 
-    jwt.verify(token, secret, async (error) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (error) => {
       if (error) {
         return res.status(401).json({ msg: "invalid token" });
       }
@@ -82,7 +83,7 @@ export const createPost = async (req, res) => {
     }
 
     const token = req.cookies.access_token;
-    jwt.verify(token, secret, async (error, info) => {
+    jwt.verify(token, process.env.JWT_SECRET, async (error, info) => {
       if (error) {
         return res.status(401).json({ msg: "Invalid token" });
       }

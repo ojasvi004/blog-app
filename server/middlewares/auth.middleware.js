@@ -1,13 +1,14 @@
-import jwt from 'jsonwebtoken';
+import jwt from "jsonwebtoken";
 
-const secret = 'askdjhfkajhdfkaepworixcmvnlsdjfh';
+import dotenv from "dotenv";
+dotenv.config();
 
 export const verifyToken = (req, res, next) => {
   const token = req.cookies.access_token;
   if (!token) {
-    return res.status(401).json({ msg: 'Unauthorized' });
+    return res.status(401).json({ msg: "Unauthorized" });
   }
-  jwt.verify(token, secret, (error, user) => {
+  jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
     if (error) {
       return res.status(500).json({ msg: error.message });
     }

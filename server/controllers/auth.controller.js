@@ -4,8 +4,8 @@ import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
 import multer from "multer";
-
-const secret = "askdjhfkajhdfkaepworixcmvnlsdjfh";
+import dotenv from "dotenv";
+dotenv.config();
 
 export async function register(req, res) {
   const { username, password } = req.body;
@@ -35,7 +35,7 @@ export async function profile(req, res) {
     return res.status(401).json({ msg: "Token not provided" });
   }
 
-  jwt.verify(token, secret, (error, info) => {
+  jwt.verify(token, process.env.JWT_SECRET, (error, info) => {
     if (error) {
       return res.status(401).json({ msg: "Invalid token" });
     }
@@ -50,14 +50,19 @@ export async function login(req, res) {
     if (userDoc) {
       const passOk = bcrypt.compareSync(password, userDoc.password);
       if (passOk) {
-        jwt.sign({ username, id: userDoc._id }, secret, {}, (error, token) => {
-          if (error) {
-            console.error(error);
-            return res.status(500).json({ msg: "Server error" });
+        jwt.sign(
+          { username, id: userDoc._id },
+          process.env.JWT_SECRET,
+          {},
+          (error, token) => {
+            if (error) {
+              console.error(error);
+              return res.status(500).json({ msg: "Server error" });
+            }
+            res.cookie("access_token", token, { httpOnly: true, secure: true });
+            res.status(200).json({ msg: "Login successful" });
           }
-          res.cookie("access_token", token, { httpOnly: true, secure: true });
-          res.status(200).json({ msg: "Login successful" });
-        });
+        );
       } else {
         res.status(401).json({ msg: "Invalid password" });
       }
