@@ -1,6 +1,4 @@
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
 import multer from "multer";
@@ -36,23 +34,11 @@ export const findAuthor = asyncHandler(async (req, res) => {
 });
 
 export const deletePost = asyncHandler(async (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) {
-    return res.status(401).json({ msg: "token not provided" });
+  const post = await Post.findOneAndDelete({ _id: req.params.id });
+  if (!post) {
+    return res.status(404).json({ msg: "No post found" });
   }
-
-  jwt.verify(token, process.env.JWT_SECRET, async (error) => {
-    if (error) {
-      return res.status(401).json({ msg: "invalid token" });
-    }
-
-    const post = await Post.findOneAndDelete({ _id: req.params.id });
-    if (!post) {
-      return res.status(404).json({ msg: "No post found" });
-    }
-
-    res.status(200).json({ msg: "deleted successfully" });
-  });
+  res.status(200).json({ msg: "deleted successfully" });
 });
 
 export const createPost = asyncHandler(async (req, res) => {
@@ -64,23 +50,15 @@ export const createPost = asyncHandler(async (req, res) => {
 
     await fs.promises.rename(tempPath, coverPath);
   }
-
-  const token = req.cookies.access_token;
-  jwt.verify(token, process.env.JWT_SECRET, async (error, info) => {
-    if (error) {
-      return res.status(401).json({ msg: "Invalid token" });
-    }
-
-    const { title, summary, content } = req.body;
-    const postDoc = await Post.create({
-      title,
-      summary,
-      content,
-      cover: coverPath,
-      author: info.id,
-    });
-    res.status(201).json(postDoc);
+  const { title, summary, content } = req.body;
+  const postDoc = await Post.create({
+    title,
+    summary,
+    content,
+    cover: coverPath,
+    author: req.user.id,
   });
+  res.status(201).json(postDoc);
 });
 
 export const updatePost = asyncHandler(async (req, res) => {

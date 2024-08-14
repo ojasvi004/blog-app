@@ -10,7 +10,7 @@ import {
 router
   .route("/:id/comment")
   .get(getComments)
-  .post(createComment)
+  .post(verifyToken, createComment)
   .delete(verifyToken, deleteComment);
 
 export { router };

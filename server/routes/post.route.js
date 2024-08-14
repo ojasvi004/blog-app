@@ -1,5 +1,14 @@
 import { Router } from "express";
 import multer from "multer";
+import { verifyToken } from "../middlewares/auth.middleware.js";
+import {
+  post,
+  findPost,
+  findAuthor,
+  deletePost,
+  createPost,
+  updatePost,
+} from "../controllers/post.controller.js";
 
 const router = Router();
 
@@ -12,19 +21,12 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
-import {
-  post,
-  findPost,
-  findAuthor,
-  deletePost,
-  createPost,
-  updatePost,
-} from "../controllers/post.controller.js";
+const upload = multer({ storage });
 
 router.route("/post").get(post);
-router.route("/post/:id").get(findPost).delete(deletePost);
+router.route("/post/:id").get(findPost).delete(verifyToken, deletePost);
 router.route("/author/:id").get(findAuthor);
-router.post("/post", upload.single("file"), createPost);
-router.put("/api/v1/post/:id", upload.single("file"), updatePost);
+router.post("/post", verifyToken, upload.single("file"), createPost);
+router.put("/post/:id", verifyToken, upload.single("file"), updatePost);
+
 export { router };

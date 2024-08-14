@@ -10,28 +10,18 @@ dotenv.config();
 export const createComment = asyncHandler(async (req, res) => {
   const { userId, postId, content, parent_comment } = req.body;
 
-  const token = req.cookies.access_token;
-  if (!token) {
-    return res.status(401).json({ msg: "token not provided" });
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({ msg: "user not found" });
   }
-
-  jwt.verify(token, process.env.JWT_SECRET, async (error) => {
-    if (error) {
-      return res.status(401).json({ msg: "invalid token" });
-    }
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ msg: "user not found" });
-    }
-    const newComment = await Comment.create({
-      user: userId,
-      post: postId,
-      content,
-      parent_comment: parent_comment || null,
-    });
-
-    res.status(201).json(newComment);
+  const newComment = await Comment.create({
+    user: userId,
+    post: postId,
+    content,
+    parent_comment: parent_comment || null,
   });
+
+  res.status(201).json(newComment);
 });
 
 export const getComments = asyncHandler(async (req, res) => {
