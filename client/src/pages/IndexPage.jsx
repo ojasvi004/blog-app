@@ -10,7 +10,7 @@ const IndexPage = () => {
       .get("http://localhost:3000/api/v1/post")
       .then((response) => {
         setPosts(response.data);
-        console.log(response.data);
+        // console.log(response.data);
       })
       .catch((error) => {
         console.log("Error fetching the posts", error);

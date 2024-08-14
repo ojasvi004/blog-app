@@ -148,3 +148,12 @@ textarea {
   margin-left: auto;
   margin-right: auto;
 }
+
+.reply-delete {
+  border: none;
+  background-color: transparent;
+  font-size: 15px;
+}
+.reply-delete:hover {
+  color: #9c89b8;
+}

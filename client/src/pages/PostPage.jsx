@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useParams, Link, Navigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import { formatISO9075 } from "date-fns";
 import axios from "axios";
 import { UserDetails } from "../components/UserDetails";
@@ -25,7 +25,7 @@ const PostPage = () => {
           `http://localhost:3000/api/v1/post/${id}`
         );
         setPostInfo(response.data);
-        console.log("Post Info:", response.data);
+        // console.log("Post Info:", response.data);
       } catch (error) {
         console.log("Error fetching post:", error);
       }
@@ -41,7 +41,7 @@ const PostPage = () => {
             `http://localhost:3000/api/v1/author/${postInfo.author}`
           );
           setAuthorInfo(response.data);
-          console.log("Author Info:", response.data);
+          // console.log("Author Info:", response.data);
         } catch (error) {
           console.log("Error fetching author:", error);
         }
@@ -57,7 +57,7 @@ const PostPage = () => {
           `http://localhost:3000/api/v1/post/${id}/comment`
         );
         setComments(response.data);
-        console.log("Comments:", response.data);
+        // console.log("Comments:", response.data);
       } catch (error) {
         console.log("Error fetching comments:", error);
       }
@@ -67,7 +67,7 @@ const PostPage = () => {
 
   const handleReplyClick = (commentId) => {
     setReplyToCommentId(commentId);
-    console.log("Reply to Comment ID:", commentId);
+    // console.log("Reply to Comment ID:", commentId);
   };
   const handleDeleteComment = async (commentId) => {
     try {
@@ -77,7 +77,7 @@ const PostPage = () => {
       });
 
       setComments(comments.filter((comment) => comment._id !== commentId));
-      console.log(`Deleted comment id: ${commentId}`);
+      // console.log(`Deleted comment id: ${commentId}`);
     } catch (error) {
       console.error("Error deleting comment:", error);
     }
@@ -99,7 +99,7 @@ const PostPage = () => {
       );
 
       if (response.status === 201) {
-        console.log("Comment created successfully!");
+        // console.log("Comment created successfully!");
         setCommentContent("");
         setReplyToCommentId(null);
         setComments([...comments, response.data]);
@@ -118,7 +118,7 @@ const PostPage = () => {
       await axios.delete(`http://localhost:3000/api/v1/post/${id}`, {
         withCredentials: true,
       });
-      console.log("post successfully deleted");
+      // console.log("post successfully deleted");
       navigate("/");
     } catch (error) {
       console.log("error deleting post", error);
@@ -159,11 +159,17 @@ const PostPage = () => {
       >
         <div>@{comment.user.username}</div>
         <p>{comment.content}</p>
-        <button onClick={() => handleReplyClick(comment._id)}>
+        <button
+          className="reply-delete"
+          onClick={() => handleReplyClick(comment._id)}
+        >
           <FaRegComment />
         </button>
         {userInfo?.id === comment.user._id && (
-          <button onClick={() => handleDeleteComment(comment._id)}>
+          <button
+            className="reply-delete"
+            onClick={() => handleDeleteComment(comment._id)}
+          >
             <FaRegTrashAlt />
           </button>
         )}
@@ -224,7 +230,12 @@ const PostPage = () => {
       ) : (
         <p>Loading...</p>
       )}
-
+      <hr />
+      <p>
+        <FaRegComment />
+        &nbsp;
+        {comments.length}
+      </p>
       {userInfo && postInfo && (
         <CreateComment userId={userInfo.id} postId={postInfo._id} />
       )}
