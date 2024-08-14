@@ -10,7 +10,7 @@ export const verifyToken = (req, res, next) => {
   }
   jwt.verify(token, process.env.JWT_SECRET, (error, user) => {
     if (error) {
-      return res.status(500).json({ msg: error.message });
+      return res.status(500).json({ msg: error });
     }
     req.user = user;
     next();

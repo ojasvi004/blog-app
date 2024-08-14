@@ -2,34 +2,30 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
-import { Post } from "../models/Post.model.js";
 import multer from "multer";
 import dotenv from "dotenv";
 dotenv.config();
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-export async function register(req, res) {
+export const register = asyncHandler(async (req, res) => {
   const { username, password } = req.body;
-  try {
-    const saltRounds = 10;
-    const salt = bcrypt.genSaltSync(saltRounds);
-    const hashedPassword = bcrypt.hashSync(password, salt);
-    const checkUsername = await User.findOne({ username });
-    if (checkUsername) {
-      return res.status(400).json({ msg: "Username already exists!" });
-    }
+  const saltRounds = 10;
+  const salt = bcrypt.genSaltSync(saltRounds);
+  const hashedPassword = bcrypt.hashSync(password, salt);
 
-    const userDoc = await User.create({
-      username,
-      password: hashedPassword,
-    });
-    res.json(userDoc);
-  } catch (error) {
-    console.error(error);
-    res.status(400).json({ msg: error.message });
+  const checkUsername = await User.findOne({ username });
+  if (checkUsername) {
+    return res.status(400).json({ msg: "Username already exists!" });
   }
-}
 
-export async function profile(req, res) {
+  const userDoc = await User.create({
+    username,
+    password: hashedPassword,
+  });
+  res.json(userDoc);
+});
+
+export const profile = asyncHandler(async (req, res) => {
   const token = req.cookies.access_token;
   if (!token) {
     return res.status(401).json({ msg: "Token not provided" });
@@ -42,39 +38,35 @@ export async function profile(req, res) {
 
     res.json(info);
   });
-}
-export async function login(req, res) {
-  const { username, password } = req.body;
-  try {
-    const userDoc = await User.findOne({ username });
-    if (userDoc) {
-      const passOk = bcrypt.compareSync(password, userDoc.password);
-      if (passOk) {
-        jwt.sign(
-          { username, id: userDoc._id },
-          process.env.JWT_SECRET,
-          {},
-          (error, token) => {
-            if (error) {
-              console.error(error);
-              return res.status(500).json({ msg: "Server error" });
-            }
-            res.cookie("access_token", token, { httpOnly: true, secure: true });
-            res.status(200).json({ msg: "Login successful" });
-          }
-        );
-      } else {
-        res.status(401).json({ msg: "Invalid password" });
-      }
-    } else {
-      res.status(404).json({ msg: "User not found!" });
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ msg: error.message });
-  }
-}
+});
 
-export async function logout(req, res) {
+export const login = asyncHandler(async (req, res) => {
+  const { username, password } = req.body;
+  const userDoc = await User.findOne({ username });
+
+  if (userDoc) {
+    const passOk = bcrypt.compareSync(password, userDoc.password);
+    if (passOk) {
+      jwt.sign(
+        { username, id: userDoc._id },
+        process.env.JWT_SECRET,
+        {},
+        (error, token) => {
+          if (error) {
+            return res.status(500).json({ msg: "Server error" });
+          }
+          res.cookie("access_token", token, { httpOnly: true, secure: true });
+          res.status(200).json({ msg: "Login successful" });
+        }
+      );
+    } else {
+      res.status(401).json({ msg: "Invalid password" });
+    }
+  } else {
+    res.status(404).json({ msg: "User not found!" });
+  }
+});
+
+export const logout = asyncHandler(async (req, res) => {
   res.cookie("access_token", "", { httpOnly: true, secure: true }).json("ok");
-}
+});
