@@ -26,18 +26,7 @@ export const register = asyncHandler(async (req, res) => {
 });
 
 export const profile = asyncHandler(async (req, res) => {
-  const token = req.cookies.access_token;
-  if (!token) {
-    return res.status(401).json({ msg: "Token not provided" });
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET, (error, info) => {
-    if (error) {
-      return res.status(401).json({ msg: "Invalid token" });
-    }
-
-    res.json(info);
-  });
+  res.json(req.user);
 });
 
 export const login = asyncHandler(async (req, res) => {
