@@ -1,8 +1,6 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import cookieParser from "cookie-parser";
 import { User } from "../models/User.model.js";
-import multer from "multer";
 import dotenv from "dotenv";
 dotenv.config();
 import { asyncHandler } from "../utils/asyncHandler.js";

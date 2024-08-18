@@ -1,7 +1,6 @@
 import bcrypt from "bcryptjs";
 import { User } from "../models/User.model.js";
 import { Post } from "../models/Post.model.js";
-import multer from "multer";
 import path from "path";
 import fs from "fs";
 import dotenv from "dotenv";

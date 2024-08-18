@@ -1,6 +1,4 @@
-import jwt from "jsonwebtoken";
 import { Comment } from "../models/Comment.model.js";
-import { Post } from "../models/Post.model.js";
 import { User } from "../models/User.model.js";
 import dotenv from "dotenv";
 import { asyncHandler } from "../utils/asyncHandler.js";
