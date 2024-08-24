@@ -57,7 +57,7 @@ export const createPost = asyncHandler(async (req, res) => {
     cover: coverPath,
     author: req.user.id,
   });
-  res.status(201).json(postDoc);
+  res.status(200).json(postDoc);
 });
 
 export const updatePost = asyncHandler(async (req, res) => {

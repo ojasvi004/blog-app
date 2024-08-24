@@ -13,18 +13,18 @@ export const register = asyncHandler(async (req, res) => {
 
   const checkUsername = await User.findOne({ username });
   if (checkUsername) {
-    return res.status(400).json({ msg: "Username already exists!" });
+    return res.status(409).json({ msg: "Username already exists!" });
   }
 
   const userDoc = await User.create({
     username,
     password: hashedPassword,
   });
-  res.json(userDoc);
+  res.status(201).json(userDoc);
 });
 
 export const profile = asyncHandler(async (req, res) => {
-  res.json(req.user);
+  res.status(200).json(req.user);
 });
 
 export const login = asyncHandler(async (req, res) => {
@@ -55,5 +55,8 @@ export const login = asyncHandler(async (req, res) => {
 });
 
 export const logout = asyncHandler(async (req, res) => {
-  res.cookie("access_token", "", { httpOnly: true, secure: true }).json("ok");
+  res
+    .cookie("access_token", "", { httpOnly: true, secure: true })
+    .status(200)
+    .json({ msg: "Logout successful" });
 });

@@ -28,7 +28,7 @@ export const getComments = asyncHandler(async (req, res) => {
     .sort({ createdAt: -1 })
     .populate("user", "username");
 
-  res.status(201).json(comments);
+  res.status(200).json(comments);
 });
 
 export const deleteComment = asyncHandler(async (req, res) => {
